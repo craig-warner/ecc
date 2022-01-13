@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["gen_ecc","Generates a 8 bit Hamming code to the 64 bits of data in data_word."]]});
