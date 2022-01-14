@@ -72,7 +72,7 @@ errors to inject.\n"
         }
         num_data_patterns = n;
       },
-      Err(e) => {
+      Err(_n) => {
         eprintln!("Error:Data Pattern Argument is not supported {}",input);
         process::exit(1) 
       }
@@ -87,7 +87,7 @@ errors to inject.\n"
         }
         num_trials = n;
       },
-      Err(e) => {
+      Err(_n) => {
         eprintln!("Error:Data Pattern Argument is not supported {}",input);
         process::exit(1) 
       }
@@ -108,7 +108,7 @@ errors to inject.\n"
           max_flips = n;
         }
       },
-      Err(e) => {
+      Err(_n) => {
         eprintln!("Error:Max Flip Argument is not supported {}",input);
         process::exit(1) 
       }
@@ -134,7 +134,7 @@ fn report_data_pattern (data_val:u64,is_verbose:bool) {
 /// - Do testing for a specified number of randomly generated data words
 fn analyze_single_bit_flips(num_data_patterns:u32,is_verbose:bool) {
   let mut data_val:u64;
-  for i in 0..num_data_patterns {
+  for _i in 0..num_data_patterns {
     data_val = hamming::com::pick_rand_word();
     report_data_pattern(data_val,is_verbose);
     single_bit_flips(data_val)
@@ -181,10 +181,10 @@ fn percent_from_u32s (n:u32, all:u32) -> f64 {
 fn analyze_multi_bit_flips(n:u32,num_trials:u32,num_data_patterns:u32,is_verbose:bool) {
   let mut array : [u32;3] = [0,0,0];
   let mut data_val:u64;
-  for i in 0..num_data_patterns {
+  for _i in 0..num_data_patterns {
     data_val = hamming::com::pick_rand_word();
     report_data_pattern(data_val,is_verbose);
-    for i in 0..num_trials {
+    for _j in 0..num_trials {
       let class = multi_bit_flips(n,data_val);
       match class { // ENHANCE: Make class enum
         1 => array[0] += 1,
@@ -206,36 +206,36 @@ fn analyze_multi_bit_flips(n:u32,num_trials:u32,num_data_patterns:u32,is_verbose
 
 /// Test Randomly selected Multi-bit flips
 fn multi_bit_flips(n:u32,data_val:u64) -> u32 {
-  let array : Vec<u32>;
-  let i:u32;
+  let _array : Vec<u32>;
+  let _i:u32;
   let mut j:u32;
   let ecc_val:u32 = hamming::gen_ecc(data_val);
   let mut corrupted_data_val:u64 = data_val;
   let mut corrupted_ecc_val:u32 = ecc_val;
-  let mut updated_data_val:u64;
-  let mut updated_ecc_val:u32;
-  let mut cor_data_val:u64;
-  let mut cor_ecc_val:u32;
+  let mut _updated_data_val:u64;
+  let mut _updated_ecc_val:u32;
+  let mut _cor_data_val:u64;
+  let mut _cor_ecc_val:u32;
   let class:u32;
 
   // Find N Bits to Flip
-  let array = hamming::com::pick_n_unique_rand_nums(n);
+  let _array = hamming::com::pick_n_unique_rand_nums(n);
   // Flip All N bits
   if GBL_DEBUG > 1 {
     println!("Debug:n={}",n);
     j=0;
-    for i in array.iter() {
-      println!("Debug:element #={},element={}",j,*i);
+    for _i in _array.iter() {
+      println!("Debug:element #={},element={}",j,*_i);
       j+=1
     }
   }
-  for i in array.iter() {
-    let (updated_data_val,updated_ecc_val) = hamming::com::do_bit_flip(corrupted_data_val,corrupted_ecc_val,*i);
-    corrupted_data_val = updated_data_val;
-    corrupted_ecc_val = updated_ecc_val;
+  for _i in _array.iter() {
+    let (_updated_data_val,_updated_ecc_val) = hamming::com::do_bit_flip(corrupted_data_val,corrupted_ecc_val,*_i);
+    corrupted_data_val = _updated_data_val;
+    corrupted_ecc_val = _updated_ecc_val;
   }
   // Attempt Fix Up
-  let (cor_data_val,cor_ecc_val,uncor) = hamming::check_and_correct(corrupted_data_val,corrupted_ecc_val,GBL_DEBUG);
+  let (_cor_data_val,_cor_ecc_val,uncor) = hamming::check_and_correct(corrupted_data_val,corrupted_ecc_val,GBL_DEBUG);
   // Classify into 
   //  1) Corrected
   //  2) Detected as Uncorrectable
@@ -243,7 +243,7 @@ fn multi_bit_flips(n:u32,data_val:u64) -> u32 {
   if uncor {
     class = 2;
   }
-  else if (cor_data_val == data_val) && (cor_ecc_val == ecc_val) {
+  else if (_cor_data_val == data_val) && (_cor_ecc_val == ecc_val) {
     class = 1;
   }
   else {
@@ -256,7 +256,7 @@ fn multi_bit_flips(n:u32,data_val:u64) -> u32 {
   if GBL_DEBUG > 1 {
     println!("Debug:data=          0x{:08x},ecc=          0x{:02x}",data_val,ecc_val);
     println!("Debug:corrupted_data=0x{:08x},corrupted_ecc=0x{:02x}",corrupted_data_val,corrupted_ecc_val);
-    println!("Debug:cor_data=      0x{:08x},cor_ecc=      0x{:02x}",cor_data_val,cor_ecc_val)
+    println!("Debug:cor_data=      0x{:08x},cor_ecc=      0x{:02x}",_cor_data_val,_cor_ecc_val)
   }
   class
 }
