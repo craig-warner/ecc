@@ -2,9 +2,11 @@
 // ECC Tester - A program to test ECC codes, written in Rust
 //  
 extern crate hamming;
+extern crate colored; // not needed in Rust 2018
+
 use std::process;
 use clap::{crate_version,App,Arg};
-
+use colored::*;
 // Globals
 pub static GBL_DEBUG : u32 = 0; // 0=> No Debug; 1=> Major Event Debug ; 2=> All Debug
 
@@ -88,7 +90,7 @@ errors to inject.\n"
         num_trials = n;
       },
       Err(_n) => {
-        eprintln!("Error:Data Pattern Argument is not supported {}",input);
+        eprintln!("{}Data Pattern Argument is not supported {}","Error:".red(), input);
         process::exit(1) 
       }
     }
@@ -98,18 +100,18 @@ errors to inject.\n"
     match input.parse::<u32>() {
       Ok(n) => {
         if (n > 60) || (n<2) {
-          eprintln!("Error:Max Flip Argument is not supported {}",input);
+          eprintln!("{}Max Flip Argument is not supported {}","Error:".red(),input);
           process::exit(1) 
         }
         else {
           if is_verbose {
-            println!("Maximum Number of Flips = {}", n);
+            println!("{}Maximum Number of Flips = {}","Info:".green(), n);
           }
           max_flips = n;
         }
       },
       Err(_n) => {
-        eprintln!("Error:Max Flip Argument is not supported {}",input);
+        eprintln!("{}Max Flip Argument is not supported {}","Error:".red(),input);
         process::exit(1) 
       }
     }
@@ -126,7 +128,7 @@ errors to inject.\n"
 
 fn report_data_pattern (data_val:u64,is_verbose:bool) {
   if is_verbose {
-    println!("Data Pattern 0x{:08x}",data_val)
+    println!("{}Data Pattern 0x{:08x}","Info:".green(), data_val)
   }
 }
 
@@ -140,7 +142,7 @@ fn analyze_single_bit_flips(num_data_patterns:u32,is_verbose:bool) {
     single_bit_flips(data_val)
   }
   if GBL_DEBUG > 0 {
-    println!("Debug:Status:Single bit error testing complete")
+    println!("{}Single bit error testing complete","Debug:".blue())
   }
 }
 
@@ -156,16 +158,16 @@ fn single_bit_flips(data_val:u64) {
     // Fix up
     let (cor_data_val,_cor_ecc,uncor) = hamming::check_and_correct(corrupted_data_val,corrupted_ecc_val,GBL_DEBUG);
     if uncor {
-      eprintln!("Error:HAMMING CODE is broken: n={}: data=0x{:08x} ecc=0x{:02x} corrupted_data=0x{:08x}", n, data_val,ecc_val,corrupted_data_val);
+      eprintln!("{}HAMMING CODE is broken: n={}: data=0x{:08x} ecc=0x{:02x} corrupted_data=0x{:08x}","Error:".red(), n, data_val,ecc_val,corrupted_data_val);
       process::exit(1) 
     }
     else if data_val != cor_data_val {
-      eprintln!("Error:HAMMING CODE does not correct data");
+      eprintln!("{}HAMMING CODE does not correct data","Error:".red());
       process::exit(1) 
     }
   }
   if GBL_DEBUG > 1 {
-    println!("Debug:Status: data_val=0x{:08x}tested all single bit errors",data_val)
+    println!("{}Status: data_val=0x{:08x}tested all single bit errors","Debug:".blue(),data_val)
   }
 }
 
@@ -191,17 +193,17 @@ fn analyze_multi_bit_flips(n:u32,num_trials:u32,num_data_patterns:u32,is_verbose
         2 => array[1] += 1,
         3 => array[2] += 1,
         _ => {
-          eprintln!("Error:Bad class");
+          eprintln!("{}Bad class","Error:".red());
           process::exit(1) 
         }
       }
     }
   }
   let total_trials:u32 = num_trials * num_data_patterns;
-  println!("Report:Error Count: n={}", n);
-  println!("Report:   Corrected    ={:5} percent={:5.2}%", array[0],percent_from_u32s(array[0],total_trials));
-  println!("Report:   Uncorrectable={:5} percent={:5.2}%", array[1],percent_from_u32s(array[1],total_trials));
-  println!("Report:   Aliased      ={:5} percent={:5.2}%", array[2],percent_from_u32s(array[2],total_trials));
+  println!("{} Error Count: n={}","Report:".green(), n);
+  println!("{}   Corrected    ={:5} percent={:5.2}%","Report:".green(), array[0],percent_from_u32s(array[0],total_trials));
+  println!("{}   Uncorrectable={:5} percent={:5.2}%","Report:".green(), array[1],percent_from_u32s(array[1],total_trials));
+  println!("{}   Aliased      ={:5} percent={:5.2}%","Report:".green(), array[2],percent_from_u32s(array[2],total_trials));
 }
 
 /// Test Randomly selected Multi-bit flips
@@ -222,10 +224,10 @@ fn multi_bit_flips(n:u32,data_val:u64) -> u32 {
   let _array = hamming::com::pick_n_unique_rand_nums(n);
   // Flip All N bits
   if GBL_DEBUG > 1 {
-    println!("Debug:n={}",n);
+    println!("{}n={}","Debug:".blue(),n);
     j=0;
     for _i in _array.iter() {
-      println!("Debug:element #={},element={}",j,*_i);
+      println!("{}element #={},element={}","Debug:".blue(),j,*_i);
       j+=1
     }
   }
@@ -251,12 +253,12 @@ fn multi_bit_flips(n:u32,data_val:u64) -> u32 {
   }
   // Report Results - Enum : 
   if GBL_DEBUG > 0 {
-    println!("Debug:n={},class={}",n,class);
+    println!("{}n={},class={}","Debug:".blue(),n,class);
   }
   if GBL_DEBUG > 1 {
-    println!("Debug:data=          0x{:08x},ecc=          0x{:02x}",data_val,ecc_val);
-    println!("Debug:corrupted_data=0x{:08x},corrupted_ecc=0x{:02x}",corrupted_data_val,corrupted_ecc_val);
-    println!("Debug:cor_data=      0x{:08x},cor_ecc=      0x{:02x}",_cor_data_val,_cor_ecc_val)
+    println!("{}data=          0x{:08x},ecc=          0x{:02x}","Debug:".blue(),data_val,ecc_val);
+    println!("{}corrupted_data=0x{:08x},corrupted_ecc=0x{:02x}","Debug:".blue(),corrupted_data_val,corrupted_ecc_val);
+    println!("{}cor_data=      0x{:08x},cor_ecc=      0x{:02x}","Debug:".blue(),_cor_data_val,_cor_ecc_val)
   }
   class
 }

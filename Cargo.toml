@@ -1,6 +1,6 @@
 [package]
 name = "ecc"
-version = "1.0.0"
+version = "1.1.0"
 edition = "2018"
 authors = ["Craig Warner"]
 
@@ -10,3 +10,21 @@ authors = ["Craig Warner"]
 hamming = {path = "hamming"}
 rand = "0.8.4"
 clap = { version = "2.0.0"}
+colored = "2"
+
+embedded-hal = "0.2.3"
+hifive1 = { version = "0.9.0", features = ["board-hifive1-revb"] }
+panic-halt = "0.2.0"
+riscv = "0.6.0"
+riscv-rt = "0.8.0"
+
+# this lets you use `cargo fix`!
+[[bin]]
+name = "ecc" 
+test = false
+bench = false
+
+[profile.release]
+codegen-units = 1 # better optimizations
+debug = true # symbols are nice and they don't increase the size on Flash
+lto = true # better optimizations
