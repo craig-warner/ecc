@@ -1,4 +1,5 @@
 # ECC Tester
+```
 ECC Tester 0.1.1
 Written by: Craig Warner
 A program to test the error correction and detection strength
@@ -20,3 +21,4 @@ OPTIONS:
     -f, --max_flips <MAX_FLIPS>...    Maximum Number of flips tested (only 2-60 are supported) [default: 8]
     -p, --patterns <PATTERNS>...      Number of data patterns to test [default: 100]
     -t, --trials <TRIALS>...          Number of multi-bit flip trials per data pattern [default: 100]
+ '''
